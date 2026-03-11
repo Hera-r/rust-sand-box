@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Day {{ day.number }}: {{ day.title }} — RustLab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'home' %}" class="back-link">Back to Dashboard</a>
+    <div class="page-header-content">
+        <div>
+            <h1 class="page-title">
+                <span class="day-badge">Day {{ day.number }}</span>
+                {{ day.title }}
+            </h1>
+            <p class="page-description">{{ day.description }}</p>
+        </div>
+        <div class="day-meta">
+            {% if day.is_critical %}
+            <span class="badge badge-critical">Critical — 100% required</span>
+            {% else %}
+            <span class="badge badge-info">Pass threshold: {{ day.passing_threshold }}%</span>
+            {% endif %}
+            {% if progress %}
+            <span class="badge {% if progress.is_validated %}badge-success{% else %}badge-neutral{% endif %}">
+                {{ progress.exercises_passed }}/{{ progress.total_exercises }} passed
+            </span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if progress %}
+<div class="day-progress-bar">
+    <div class="progress-bar progress-bar-lg">
+        <div class="progress-fill {% if progress.is_validated %}progress-success{% endif %}"
+             style="width: {{ progress.percentage }}%"></div>
+    </div>
+    <div class="progress-stats">
+        <span>{{ progress.percentage }}% complete</span>
+        {% if progress.is_validated %}
+        <span class="text-success">Day Validated</span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="exercises-list">
+    {% for item in exercise_data %}
+    <a href="{% url 'exercise_detail' day.number item.exercise.number %}"
+       class="exercise-card {% if item.status == 'pass' %}exercise-passed{% elif item.status %}exercise-attempted{% endif %}"
+       id="exercise-{{ item.exercise.number }}">
+        <div class="exercise-left">
+            <div class="exercise-status-icon">
+                {% if item.status == 'pass' %}
+                    <span class="status-pass">OK</span>
+                {% elif item.status == 'fail' %}
+                    <span class="status-fail">X</span>
+                {% elif item.status == 'error' %}
+                    <span class="status-error">!</span>
+                {% else %}
+                    <span class="status-pending">--</span>
+                {% endif %}
+            </div>
+            <div class="exercise-info">
+                <h3 class="exercise-title">
+                    <span class="exercise-number">Ex{{ item.exercise.number|stringformat:"02d" }}</span>
+                    {{ item.exercise.title }}
+                </h3>
+                <p class="exercise-desc">{{ item.exercise.description|truncatewords:15 }}</p>
+            </div>
+        </div>
+        <div class="exercise-right">
+            <span class="difficulty-badge difficulty-{{ item.exercise.difficulty }}">
+                {{ item.exercise.get_difficulty_display }}
+            </span>
+            {% if item.exercise.has_timeout %}
+            <span class="badge badge-perf">Performance</span>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

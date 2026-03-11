@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}RustLab — Dashboard{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            Learn <span class="gradient-text">Rust</span> by Doing
+        </h1>
+        <p class="hero-subtitle">
+            Intensive, practice-based training. Progress from beginner
+            to mid-level through structured challenges.
+        </p>
+        {% if not user.is_authenticated %}
+        <div class="hero-actions">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Start Learning</a>
+            <a href="{% url 'login' %}" class="btn btn-ghost btn-lg">Login</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="days-section">
+    <h2 class="section-title">Training Days</h2>
+    <div class="days-grid">
+        {% for item in day_data %}
+        {% if user.is_authenticated or item.day.number == 1 %}
+        <a href="{% url 'day_detail' item.day.number %}" class="day-card {% if item.is_validated %}validated{% endif %}" id="day-{{ item.day.number }}">
+        {% else %}
+        <div class="day-card locked {% if item.is_validated %}validated{% endif %}" id="day-{{ item.day.number }}">
+        {% endif %}
+            <div class="day-card-header">
+                <span class="day-number">Day {{ item.day.number }}</span>
+                {% if item.day.is_critical %}
+                <span class="badge badge-critical">Critical</span>
+                {% endif %}
+                {% if item.is_validated %}
+                <span class="badge badge-success">Validated</span>
+                {% endif %}
+            </div>
+            <h3 class="day-title">{{ item.day.title }}</h3>
+            <p class="day-description">{{ item.day.description|truncatewords:20 }}</p>
+            <div class="day-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ item.percentage }}%"></div>
+                </div>
+                <div class="progress-stats">
+                    <span>{{ item.passed }}/{{ item.total }} exercises</span>
+                    <span>{{ item.percentage }}%</span>
+                </div>
+            </div>
+        {% if user.is_authenticated or item.day.number == 1 %}
+        </a>
+        {% else %}
+        </div>
+        {% endif %}
+        {% empty %}
+        <div class="empty-state">
+            <p>No days available yet. Check back soon.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% if user.is_authenticated %}
+<section class="stats-section">
+    <h2 class="section-title">Your Progress</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">
+                {% with validated=0 %}
+                {% for item in day_data %}{% if item.is_validated %}{{ forloop.counter }}{% endif %}{% endfor %}
+                {% endwith %}
+            </div>
+            <div class="stat-label">Days Validated</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ day_data|length }}</div>
+            <div class="stat-label">Total Days</div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

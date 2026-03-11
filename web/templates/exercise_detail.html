@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Ex{{ exercise.number|stringformat:"02d" }}: {{ exercise.title }} — Day {{ day.number }} — RustLab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'day_detail' day.number %}" class="back-link">Back to Day {{ day.number }}</a>
+    <div class="page-header-content">
+        <div>
+            <h1 class="page-title">
+                <span class="exercise-badge">Ex{{ exercise.number|stringformat:"02d" }}</span>
+                {{ exercise.title }}
+            </h1>
+        </div>
+        <div class="exercise-meta">
+            <span class="difficulty-badge difficulty-{{ exercise.difficulty }}">
+                {{ exercise.get_difficulty_display }}
+            </span>
+            {% if exercise.has_timeout %}
+            <span class="badge badge-perf">Timeout: {{ exercise.timeout_seconds }}s</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="exercise-layout">
+    <div class="exercise-description-panel">
+        <div class="panel tabs-panel">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="openTab(event, 'tab-description')">Description</button>
+                {% if exercise.tutorial %}
+                <button class="tab-btn" onclick="openTab(event, 'tab-tutorial')">Tutoriel</button>
+                {% endif %}
+                {% if exercise.examples %}
+                <button class="tab-btn" onclick="openTab(event, 'tab-examples')">Exemples</button>
+                {% endif %}
+            </div>
+
+            <div id="tab-description" class="tab-content active" style="display: block;">
+                <div class="description-content">
+                    {{ exercise.description|linebreaks }}
+                </div>
+                {% if exercise.function_signature %}
+                <div class="signature-block">
+                    <h3>Expected Signature</h3>
+                    <pre><code>{{ exercise.function_signature }}</code></pre>
+                </div>
+                {% endif %}
+                {% if exercise.performance_notes %}
+                <div class="perf-panel mt-4">
+                    <h3 style="font-size: 0.8rem; color: var(--warning); margin-bottom: 0.5rem; text-transform: uppercase;">Bonnes Pratiques & Performance</h3>
+                    <div class="notes-content">
+                        {{ exercise.performance_notes|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if exercise.tutorial %}
+            <div id="tab-tutorial" class="tab-content" style="display: none;">
+                <div class="description-content tutorial-content">
+                    {{ exercise.tutorial|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if exercise.examples %}
+            <div id="tab-examples" class="tab-content" style="display: none;">
+                <div class="examples-content">
+                    <pre><code>{{ exercise.examples }}</code></pre>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="exercise-code-panel">
+        <div class="panel">
+            <div class="code-header">
+                <h2 class="panel-title">Your Solution</h2>
+                <div class="code-lang">Rust</div>
+            </div>
+
+            {% if user.is_authenticated or day.number == 1 %}
+            <div class="code-editor-wrapper">
+                <textarea
+                    id="code-editor"
+                    class="code-editor"
+                    spellcheck="false"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    placeholder="// Write your Rust solution here..."
+                >{% if last_submission %}{{ last_submission.code }}{% elif exercise.starter_code %}{{ exercise.starter_code }}{% endif %}</textarea>
+            </div>
+
+            <div class="submit-section">
+                <button id="submit-btn" class="btn btn-primary btn-submit"
+                        data-url="{% url 'submit_code' day.number exercise.number %}">
+                    <span class="btn-text">Submit Solution</span>
+                    <span class="btn-loader" style="display:none;">
+                        <span class="spinner"></span> Compiling...
+                    </span>
+                </button>
+            </div>
+
+            <div id="result-panel" class="result-panel" style="display:none;">
+                <div class="result-header">
+                    <span id="result-icon"></span>
+                    <span id="result-title"></span>
+                </div>
+                <pre id="result-message" class="result-message"></pre>
+            </div>
+            {% else %}
+            <div class="auth-prompt">
+                <p>You need to be logged in to submit solutions.</p>
+                <div class="auth-actions">
+                    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-ghost">Sign Up</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+<style>
+.code-editor-wrapper {
+    position: relative;
+    width: 100%;
+    overflow-x: hidden;
+}
+.CodeMirror {
+    height: 100%;
+    min-height: 300px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    border-radius: 4px;
+    max-width: 100%;
+}
+.terminal-example {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    overflow-x: auto;
+    line-height: 1.6;
+}
+.tutorial-content p {
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+    color: var(--text);
+}
+.tutorial-content code {
+    background-color: var(--bg-alt);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    color: var(--primary);
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/rust/rust.min.js"></script>
+<script>
+function openTab(evt, tabId) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        tabcontent[i].classList.remove("active");
+    }
+    tablinks = document.getElementsByClassName("tab-btn");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+    document.getElementById(tabId).style.display = "block";
+    document.getElementById(tabId).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var editorEl = document.getElementById("code-editor");
+    if (editorEl) {
+        window.editor = CodeMirror.fromTextArea(editorEl, {
+            lineNumbers: true,
+            mode: "rust",
+            theme: "monokai",
+            indentUnit: 4
+        });
+    }
+
+    var exampleCode = document.querySelector('#tab-examples code');
+    if (exampleCode) {
+        var pre = exampleCode.parentElement;
+        pre.classList.add('terminal-example');
+        var lines = exampleCode.textContent.split('\n');
+        var newHtml = '';
+        for (var i = 0; i < lines.length; i++) {
+            var lineText = lines[i].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            if (lineText.trim() || i < lines.length - 1) {
+                newHtml += '<span class="terminal-line">' + lineText + '</span>\n';
+            }
+        }
+        exampleCode.innerHTML = newHtml;
+    }
+});
+</script>
+{% endblock %}

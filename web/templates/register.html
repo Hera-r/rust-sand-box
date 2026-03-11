@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up — RustLab{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Start your Rust training</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="alert alert-error">
+            {% for field in form %}
+                {% for error in field.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" id="id_username" name="username" required autofocus
+                       class="form-input" placeholder="Choose a username"
+                       value="{{ form.username.value|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                <input type="password" id="id_password1" name="password1" required
+                       class="form-input" placeholder="Create a password">
+            </div>
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                <input type="password" id="id_password2" name="password2" required
+                       class="form-input" placeholder="Confirm your password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
