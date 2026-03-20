@@ -1,0 +1,34 @@
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: piscine-web
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./web:/app
+      - db-data:/app/db
+    env_file:
+      - .env
+    depends_on:
+      - runner
+    networks:
+      - rustsandbox-net
+
+  runner:
+    build:
+      context: ./runner
+      dockerfile: Dockerfile
+    container_name: piscine-runner
+    volumes:
+      - ./exercises:/exercises:ro
+    networks:
+      - rustsandbox-net
+
+volumes:
+  db-data:
+
+networks:
+  rustsandbox-net:
+    driver: bridge
