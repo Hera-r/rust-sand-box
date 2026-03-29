@@ -24,7 +24,7 @@
     --radius-lg: 8px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; /* Fixed UI overflow bug on mobile viewports */ box-sizing: border-box; }
 
 body {
     font-family: var(--font-sans);
