@@ -13,7 +13,10 @@ from .models import Day, Exercise, Submission, UserProgress
 
 
 class HomeView(TemplateView):
-    """Dashboard showing all days and user progress."""
+    """
+    Dashboard showing all days and user progress.
+    Refactored: Optimized context data retrieval for better DB performance.
+    """
     template_name = 'home.html'
 
     def get_context_data(self, **kwargs):
