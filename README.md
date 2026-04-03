@@ -1,6 +1,8 @@
 # Rust Sandbox
 
-Rust Sandbox is an intensive, practice based learning platform for the Rust programming language. It is designed as a local training environment (piscine) to help developers progress from beginner to advanced levels through structured, hands on challenges.
+Rust Sandbox is an intensive, practice based learning platform for the Rust programming language. It is designed as a local training environment (piscine) to help developers progress from beginner to advanced levels through structured, hands on challenges. 
+
+*Designed meticulously for maximum pedagogy and security.*
 
 ## Architecture
 
