@@ -16,7 +16,7 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-EXERCISES_DIR = '/exercises'
+BASE_EXERCISES_DIR = '/exercises'
 
 
 @app.route('/health', methods=['GET'])
