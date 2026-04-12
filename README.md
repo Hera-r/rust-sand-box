@@ -1,6 +1,6 @@
-# Rust Sandbox
+# Rust Pool
 
-Rust Sandbox is an intensive, practice based learning platform for the Rust programming language. It is designed as a local training environment (piscine) to help developers progress from beginner to advanced levels through structured, hands on challenges. 
+Rust Pool is an intensive, practice based learning platform for the Rust programming language. It is designed as a local training environment (piscine) to help developers progress from beginner to advanced levels through structured, hands on challenges. 
 
 *Designed meticulously for maximum pedagogy and security.*
 
@@ -12,7 +12,7 @@ The platform operates using two main services isolated in local Docker container
 
 ## Execution and Setup
 
-To run Rust Sandbox locally, you must provide the necessary environmental configuration.
+To run Rust Pool locally, you must provide the necessary environmental configuration.
 
 1. Create a file named .env at the root of the project with the following required variables:
 
@@ -30,9 +30,9 @@ RUNNER_URL=http://runner:8001
 Once started, the application is accessible at http://localhost:8000.
 
 
-# Rust Sandbox (Version Francaise)
+# Rust Pool (Version Francaise)
 
-Rust Sandbox est une plateforme d'apprentissage intensive et pratique dediee au langage de programmation Rust. Elle est concue comme un environnement d'entrainement local (piscine) pour accompagner les developpeurs du niveau debutant au niveau avance a travers des defis structures.
+Rust Pool est une plateforme d'apprentissage intensive et pratique dediee au langage de programmation Rust. Elle est concue comme un environnement d'entrainement local (piscine) pour accompagner les developpeurs du niveau debutant au niveau avance a travers des defis structures.
 
 ## Architecture
 
@@ -42,7 +42,7 @@ La plateforme est composee de deux services principaux isoles dans des conteneur
 
 ## Execution et Installation
 
-Pour executer Rust Sandbox localement, vous devez fournir la configuration environnementale requise.
+Pour executer Rust Pool localement, vous devez fournir la configuration environnementale requise.
 
 1. Creez un fichier nomme .env a la racine du projet contenant les variables obligatoires suivantes :
 
